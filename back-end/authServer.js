@@ -5,23 +5,50 @@ const app = express();
 const logger = require('morgan');
 const cors = require('cors');
 const port = 3000;
+const bcrypt = require('bcrypt')
 
 const jwt = require('jsonwebtoken')
 
 app.use(express.json())
 
 let refreshTokens = []
+let users = []
 
-app.post('/login', (req, res) => {
-    //Authenticate user using username and password
 
-    const username = req.body.username
-    const user = { name: username}
-    const accesToken = generateAccessToken(user)
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2000s' })
-    refreshTokens.push(refreshToken)
-    res.json({ accesToken: accesToken, refreshToken: refreshToken })
+app.post('/users', async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const user = { name: req.body.username, password: hashedPassword}
+    users.push(user)
+    res.status(201).send()
+  } catch {
+    res.status(500).send()
+  }
 })
+
+app.post('/users/login', async (req, res) => {
+    //Authenticate user using username and password
+    const user = users.find(user => user.name === req.body.username)
+    if(user == null) {
+      return res.status(400).send("Cannot find user!")
+    }
+    try {
+      if(await bcrypt.compare(req.body.password, user.password)) {
+        const accesToken = generateAccessToken(user)
+        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2000s' })
+        refreshTokens.push(refreshToken)
+        res.json({ accesToken: accesToken, refreshToken: refreshToken, message: `Welcome ${user.name} !` })
+      } else {
+        res.send('Not allowed')
+      }
+    } catch {
+      res.status(500).send()
+    }
+
+    // const username = req.body.username
+    // const user = { name: username}
+    
+  })
 
 app.post('/token', (req, res) => {
     const refreshToken = req.body.token
@@ -34,7 +61,7 @@ app.post('/token', (req, res) => {
     })
   })
   
-  app.delete('/logout', (req, res) => {
+  app.delete('/users/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token !== req.body.token)
     res.sendStatus(204)
   })

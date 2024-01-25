@@ -32,8 +32,8 @@ app.get('/movies', authenticateToken, (req, res) => {
 })
 
 app.post('/movies', authenticateToken, (req, res) => {
-    movies.push({ username: req.user.name, title: req.body.title, description: req.body.description, cast: req.body.cast })
-    res.json(movies)
+    movies.push({ username: req.user.name, title: req.body.title, category: req.body.category , description: req.body.description, cast: req.body.cast })
+    res.json(movies.filter(movie => movie.username === req.user.name))
 })
 
 function authenticateToken(req, res, next) {
