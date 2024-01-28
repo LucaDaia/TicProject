@@ -42,7 +42,7 @@ app.post('/users/login', async (req, res) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2000s' });
         refreshTokens.push(refreshToken);
-        return res.json({ accessToken: accessToken, refreshToken: refreshToken, name: user.name });
+        return res.json({ accessToken: accessToken, refreshToken: refreshToken, nameOfUser: user.name });
       } else {
         return res.status(400).send('Incorrect password');
       }

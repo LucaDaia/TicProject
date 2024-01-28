@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Welcome</h1>
+    <h1>Welcome {{ nameOfUser }}</h1>
     <MovieList :movies="fetchedMovies"></MovieList>
   </div>
 </template>
@@ -17,13 +17,12 @@ export default {
   setup () {
     const fetchedMovies = ref([])
     const accessToken = ref(null)
-    const name = ref('')
-    // const refreshToken = ref(null)
+    const nameOfUser = ref(null) // Define as ref()
 
     const getItemFromSessionStorage = () => {
       accessToken.value = sessionStorage.getItem('accessToken')
-      // refreshToken = sessionStorage.getItem('refreshToken')
-      name.value = sessionStorage.getItem('name')
+      nameOfUser.value = sessionStorage.getItem('nameOfUser') // Assign to value property
+      console.log(nameOfUser.value)
     }
 
     onMounted(getItemFromSessionStorage)
@@ -52,7 +51,8 @@ export default {
 
     return {
       accessToken,
-      fetchedMovies
+      fetchedMovies,
+      nameOfUser
     }
   }
 }

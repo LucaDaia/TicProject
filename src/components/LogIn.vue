@@ -42,12 +42,12 @@ export default {
         }
 
         const data = await response.json()
-        const { accessToken, refreshToken, name } = data
-        console.log(`Access token: ${accessToken}\n`, `Refresh token: ${refreshToken}`, `Name: ${name}`)
+        const { accessToken, refreshToken, nameOfUser } = data
+        console.log(`Access token: ${accessToken}\n`, `Refresh token: ${refreshToken}\n`, `Name: ${nameOfUser}`)
 
         sessionStorage.setItem('accessToken', accessToken)
         sessionStorage.setItem('refreshToken', refreshToken)
-        sessionStorage.setItem('name', name)
+        sessionStorage.setItem('nameOfUser', nameOfUser)
 
         router.push('/overview')
       } catch (error) {
