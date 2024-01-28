@@ -6,49 +6,55 @@ const logger = require('morgan');
 const cors = require('cors');
 const port = 3000;
 const bcrypt = require('bcrypt')
+const {getUsers, addUser} = require('./config')
 
 const jwt = require('jsonwebtoken')
 
 app.use(express.json())
+app.use(cors())
 
 let refreshTokens = []
-let users = []
 
 
 app.post('/users', async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const hashedPassword = await bcrypt.hash(req.body.password, 10 )
     const user = { name: req.body.username, password: hashedPassword}
-    users.push(user)
-    res.status(201).send()
+    await addUser(user.name, user.password)
+    res.status(201).send({ msg: "User added"})
   } catch {
     res.status(500).send()
   }
 })
 
 app.post('/users/login', async (req, res) => {
-    //Authenticate user using username and password
-    const user = users.find(user => user.name === req.body.username)
-    if(user == null) {
-      return res.status(400).send("Cannot find user!")
-    }
-    try {
-      if(await bcrypt.compare(req.body.password, user.password)) {
-        const accesToken = generateAccessToken(user)
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2000s' })
-        refreshTokens.push(refreshToken)
-        res.json({ accesToken: accesToken, refreshToken: refreshToken, message: `Welcome ${user.name} !` })
-      } else {
-        res.send('Not allowed')
-      }
-    } catch {
-      res.status(500).send()
+  try {
+    let users = await getUsers();
+    
+    // Authenticate user using username and password
+    const user = users.find(user => user.name === req.body.username);
+    if (user == null) {
+      return res.status(400).send("Cannot find user!");
     }
 
-    // const username = req.body.username
-    // const user = { name: username}
-    
-  })
+    try {
+      if (await bcrypt.compare(req.body.password, user.password)) {
+        const accessToken = generateAccessToken(user);
+        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '2000s' });
+        refreshTokens.push(refreshToken);
+        return res.json({ accessToken: accessToken, refreshToken: refreshToken, name: user.name });
+      } else {
+        return res.status(400).send('Incorrect password');
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(400).send("Couldn't connect to database");
+  }
+});
 
 app.post('/token', (req, res) => {
     const refreshToken = req.body.token
@@ -69,5 +75,6 @@ app.post('/token', (req, res) => {
 function generateAccessToken(user) {
     return jwt.sign(user, process.env.ACCES_TOKEN_SECRET, { expiresIn: '2000s' }) //33 minute
 }
+
 
 app.listen(4000)
