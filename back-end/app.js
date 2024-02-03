@@ -5,7 +5,7 @@ const app = express();
 const logger = require('morgan');
 const cors = require('cors');
 const port = 3000;
-const {getMovies, addMovie, getCategories, addCategory} = require('./config')
+const {getMovies, addMovie, getCategories, addCategory, editMovie} = require('./config')
 
 const jwt = require('jsonwebtoken')
 
@@ -26,6 +26,23 @@ app.get('/movies', authenticateToken, async (req, res) => {
     res.status(500).send(e)
   }
     
+})
+
+app.put('/movies/:id', authenticateToken, async (req, res) => {
+    try {
+        const movieId = req.params.id;
+        const { title, category, description, cast, duration, rating} = req.body;
+
+        if (!title || !category || !description || !cast || !duration || !rating) {
+            return res.status(400).json({ error: 'Missing required fields' });
+          }
+
+        await editMovie(movieId, req.user.name, title, category, description, cast, duration, rating)
+        res.status(200).json({message: 'Movie updated succesfully'})
+    } catch (e) {
+        console.error('Error updating movie', e)
+        res.status(500).send('Failed to update movie!')
+    }
 })
 
 app.post('/movies', authenticateToken,async (req, res) => {
@@ -69,7 +86,7 @@ app.post('/category', authenticateToken, async (req, res) => {
 
     try {
         await addCategory(cta.nameOfCategory, cta.stapleMovies)
-        res.status(201).send("Movie added")
+        res.status(201).send("Category added")
     } catch(e) {
         res.status(500).send("Couldn't add category")
     }

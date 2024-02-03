@@ -1,58 +1,56 @@
 <template>
   <div>
     <h1>Welcome {{ nameOfUser }}</h1>
-    <MovieList :movies="fetchedMovies"></MovieList>
+    <select name="type of sort" id="sort">
+      <option value="All movies"></option>
+    </select>
+    <MovieList :movies="fetchedMovies" @movie-clicked="showEditForm"></MovieList>
+    <EditMovieComponent v-if="selectedMovie" :movieData="selectedMovie" @form-clicked="clickedOnForm"></EditMovieComponent>
   </div>
 </template>
 
 <script>
 import MovieList from '@/components/MovieList.vue'
+import EditMovieComponent from '@/components/EditMovieComponent.vue'
 import { onMounted, ref } from 'vue'
+import { getItemFromSessionStorage, fetchData } from '@/Utils.js'
 
 export default {
   name: 'OverView',
   components: {
-    MovieList
+    MovieList,
+    EditMovieComponent
   },
   setup () {
     const fetchedMovies = ref([])
     const accessToken = ref(null)
+    const refreshToken = ref(null)
     const nameOfUser = ref(null) // Define as ref()
+    const selectedMovie = ref(null)
 
-    const getItemFromSessionStorage = () => {
-      accessToken.value = sessionStorage.getItem('accessToken')
-      nameOfUser.value = sessionStorage.getItem('nameOfUser') // Assign to value property
-      console.log(nameOfUser.value)
+    onMounted(() => {
+      getItemFromSessionStorage(accessToken, refreshToken, nameOfUser)
+      fetchData(accessToken, fetchedMovies)
+    })
+
+    const showEditForm = (movie) => {
+      console.log('Clicked on\n ', movie)
+      selectedMovie.value = movie
+      console.log(selectedMovie.value)
     }
 
-    onMounted(getItemFromSessionStorage)
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/movies', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken.value}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        if (!response.ok) {
-          throw new Error('Failed to fetch movies')
-        }
-
-        const dataFetched = await response.json()
-        fetchedMovies.value = dataFetched
-        console.log(fetchedMovies)
-      } catch (e) {
-        console.error('Error fetching movies', e)
-      }
+    const clickedOnForm = () => {
+      console.log('Form has been submited new movies fetched')
+      fetchData(accessToken, fetchedMovies)
     }
-    onMounted(fetchData)
 
     return {
       accessToken,
       fetchedMovies,
-      nameOfUser
+      nameOfUser,
+      showEditForm,
+      clickedOnForm,
+      selectedMovie
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
   <h2>Movies watched</h2>
-  <MovieComponent v-for="(movie, index) in movies" :key="index" :mTitle="movie.title" :mCategory="movie.category" :mDescription="movie.description" :mCast="movie.cast" :mDuration="movie.duration" :mRating="movie.rating"></MovieComponent>
+  <MovieComponent v-for="(movie, index) in movies" :key="index" :mTitle="movie.title" :mCategory="movie.category" :mDescription="movie.description" :mCast="movie.cast" :mDuration="movie.duration" :mRating="movie.rating" @click="handleMovieClick(movie)"></MovieComponent>
   </div>
 </template>
 
@@ -14,8 +14,15 @@ export default {
   components: {
     MovieComponent
   },
-  setup () {
+  setup (props, { emit }) {
+    const handleMovieClick = (movie) => {
+      emit('movie-clicked', movie)
+    }
     console.log('A ajuns la Movie list!')
+
+    return {
+      handleMovieClick
+    }
   }
 }
 </script>

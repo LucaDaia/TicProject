@@ -1,5 +1,5 @@
 const { initializeApp } = require("firebase/app");
-const { getFirestore, collection, addDoc, getDocs } = require("firebase/firestore");
+const { getFirestore, collection, addDoc, getDocs, updateDoc, doc } = require("firebase/firestore");
 
 const firebaseConfig = {
     apiKey: "AIzaSyArY0hC0KttmyEfprYnCHVSgaUybXA92VM",
@@ -58,6 +58,24 @@ const firebaseConfig = {
     }
   }
 
+  const editMovie = async (movieId, userNameP, titleP, categoryP, descriptionP, castP, durationP, ratingP) => {
+    try {
+        const movieRef = doc(db, 'movies', movieId)
+        await updateDoc(movieRef, {
+            username: userNameP,
+            title: titleP,
+            category: categoryP,
+            description: descriptionP,
+            cast: castP,
+            duration: durationP,
+            rating: ratingP
+        })
+        console.log("Movie updated succesfully!")
+    } catch(error) {
+        console.error("Error updating the movie:", error)
+    }
+  }
+
   const getMovies = async () => {
     try {
         const querySnapshot = await getDocs(moviesCollection);
@@ -92,4 +110,4 @@ const firebaseConfig = {
     }
   }
 
-  module.exports = { getUsers, addUser, getMovies, addMovie, getCategories, addCategory }
+  module.exports = { getUsers, addUser, getMovies, addMovie, getCategories, addCategory, editMovie }
