@@ -56,7 +56,4 @@ export default {
 
 <style scoped>
 
-.formRegister {
-    background-color: greenyellow;
-}
 </style>

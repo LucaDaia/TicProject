@@ -1,6 +1,6 @@
 <template>
   <div>
-  <h2>Movies watched</h2>
+  <h1>Movies watched</h1>
   <MovieComponent v-for="(movie, index) in movies" :key="index" :mTitle="movie.title" :mCategory="movie.category" :mDescription="movie.description" :mCast="movie.cast" :mDuration="movie.duration" :mRating="movie.rating" @click="handleMovieClick(movie)"></MovieComponent>
   </div>
 </template>

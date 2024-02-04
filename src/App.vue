@@ -1,31 +1,59 @@
 <template>
-  <nav>
-    <router-link to="/">Back to login</router-link> |
-    <router-link to="/about">About</router-link>
+  <nav class="navbar">
+    <img src="./assets/logoPictogram.png" alt="logo" class="logo">
+    <router-link to="/" class="nav-link">Home</router-link>
+    <h1 id="myMovieText">MyMovie</h1>
+    <router-link to="/about" class="nav-link">About</router-link>
   </nav>
   <router-view/>
 </template>
 
 <style>
+html, body {
+  background-color: bisque; /* Set background color for the entire page */
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Poppins-Black', sans-serif; /* Change font family */
   text-align: center;
   color: #2c3e50;
+  background-color: bisque;
 }
 
-nav {
-  padding: 30px;
-  /* text-align: left; */
+@font-face {
+  font-family: 'Poppins-Black';
+  src: url('./assets/PoppinsFont/Poppins-Black.ttf');
+  font-weight: normal;
+  font-style: normal;
 }
 
-nav a {
+.navbar {
+  background-color: rgb(27, 2, 82); /* Dark blue background color */
+  padding: 50px; /* Decreased padding */
+  display: flex;
+  align-items: center; /* Center vertically */
+}
+
+.nav-link {
   font-weight: bold;
-  color: #2c3e50;
+  font-size: 30px;
+  color: #fff; /* White text color */
+  text-decoration: none; /* Remove underline */
+  margin: 0 10px; /* Add space between links */
+  flex-grow: 1; /* Make links expand to fill available space */
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+.nav-link:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+.logo {
+  width: 80px; /* Decreased width */
+  height: auto; /* Maintain aspect ratio */
+  margin-right: 20px; /* Add margin to separate logo from links */
+}
+
+#myMovieText {
+  color: yellowgreen;
 }
 </style>

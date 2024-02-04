@@ -1,15 +1,27 @@
 <template>
   <div>
-    <h1>Welcome {{ nameOfUser }}</h1>
-    <select name="type of sort" id="categorySelect" v-model="selectedCategory" @change="handleSelectChange">
-      <option value="allMovies"> All movies </option>
-      <option v-for="category in fetchedCategories" :key="category" :value="category.nameOfCategory">{{ category.nameOfCategory }}</option>
-    </select>
-    <button @click="addNewMovie()">Add a new movie</button>
+    <h1>Welcome back, {{ nameOfUser }}!</h1>
+    <div class="lists-container">
+      <div class="list">
+        <select name="type of sort" id="categorySelect" v-model="selectedCategory" @change="handleSelectChange">
+          <option value="allMovies"> All movies </option>
+          <option v-for="category in fetchedCategories" :key="category" :value="category.nameOfCategory">{{ category.nameOfCategory }}</option>
+        </select>
+        <select id="sortBySmth" v-model="parameterSelected" @change="handleParameterChange">
+          <option value="none">None</option>
+          <option value="duration">Duration</option>
+          <option value="rating">Rating</option>
+        </select>
+        <button @click="addNewMovie()">Add a new movie</button>
+        <MovieList :movies="filteredMovies" @movie-clicked="showEditForm"></MovieList>
+      </div>
+      <div class="separator"></div>
+      <div class="list">
+        <CategoryList :categories="fetchedCategories" @category-clicked="showCategoryForm"></CategoryList>
+      </div>
+    </div>
     <EditMovieComponent v-if="wantToAdd" :movieData="defaultMovie" :typeOfForm="1" @form-clicked="clickedOnForm"></EditMovieComponent>
-    <MovieList :movies="filteredMovies" @movie-clicked="showEditForm"></MovieList>
     <EditMovieComponent v-if="selectedMovie" :movieData="selectedMovie" :typeOfForm="0" @form-clicked="clickedOnForm"></EditMovieComponent>
-    <CategoryList :categories="fetchedCategories" @category-clicked="showCategoryForm"></CategoryList>
     <EditCategoryComponent v-if="selCat" :categoryData="selCat" @formC-clicked="clickedOnFormCat"></EditCategoryComponent>
   </div>
 </template>
@@ -41,6 +53,7 @@ export default {
     const selectedCategory = ref('allMovies')
     const filteredMovies = ref([])
     const selCat = ref(null)
+    const parameterSelected = ref('none')
 
     onMounted(() => {
       getItemFromSessionStorage(accessToken, refreshToken, nameOfUser)
@@ -59,7 +72,8 @@ export default {
 
     const clickedOnForm = () => {
       console.log('Form has been submited new movies fetched')
-      fetchData(accessToken, fetchedMovies)
+      fetchData(accessToken, filteredMovies)
+      filteredMovies.value = filteredMovies.value.filter(movie => movie.category === selectedCategory.value)
     }
 
     const addNewMovie = () => {
@@ -102,12 +116,27 @@ export default {
       handleSelectChange,
       selCat,
       showCategoryForm,
-      clickedOnFormCat
+      clickedOnFormCat,
+      parameterSelected
     }
   }
 }
 </script>
 
 <style>
+.lists-container {
+  display: flex;
+  justify-content: space-between; /* Adjust as needed */
+}
 
+.list {
+  flex: 1;
+}
+
+.separator {
+  width: 3px;
+  height: auto;
+  background-color: black;
+  margin-left: 20px;
+}
 </style>

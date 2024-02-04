@@ -67,7 +67,4 @@ export default {
 
 <style scoped>
 
-.formLogIn {
-    background-color: aqua;
-}
 </style>

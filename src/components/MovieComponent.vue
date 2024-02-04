@@ -1,6 +1,6 @@
 <template>
   <div class="movie-details">
-    <h1>{{ mTitle }}</h1>
+    <h2>{{ mTitle }}</h2>
     <div class="details">
       <div class="detail">
         <span class="label">Category:</span>
@@ -41,14 +41,15 @@ export default {
 
 <style scoped>
 .movie-details {
-  background-color: #f9f9f9;
+  background-color: rgb(241, 182, 95);
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+  padding: 5px;
+  margin-bottom: 5px;
 }
 
 .details {
   margin-top: 10px;
+  font-size: 10px;
 }
 
 .detail {
