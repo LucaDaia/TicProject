@@ -32,7 +32,7 @@
 
 <script>
 import { ref, watch } from 'vue'
-import { submitFormEditMovie, defaultMovie } from '@/Utils.js'
+import { submitFormEditMovie, defaultMovie, submitFormAddMovie } from '@/Utils.js'
 
 export default {
   name: 'editMovieComponent',
@@ -41,6 +41,10 @@ export default {
       type: Object,
       required: true,
       default: defaultMovie
+    },
+    typeOfForm: {
+      type: String,
+      required: true
     }
   },
   setup (props, { emit }) {
@@ -57,6 +61,8 @@ export default {
       rating: props.movieData.rating || ''
     })
 
+    const typeOfFormConst = parseInt(props.typeOfForm, 10)
+
     const accessToken = ref(null)
 
     // Watch for changes in props.movieData and update formData
@@ -71,11 +77,16 @@ export default {
     }, { immediate: true })
 
     const submitForm = () => {
+      console.log('PROPSUL ESTE: ', typeOfFormConst)
       accessToken.value = sessionStorage.getItem('accessToken')
       console.log(accessToken)
-      // Handle form submission, e.g., send data to server for updating the movie
-      submitFormEditMovie(accessToken, formData.value)
-      console.log('Form submitted with data:', formData.value)
+      if (typeOfFormConst === 0) {
+        submitFormEditMovie(accessToken, formData.value)
+        console.log('a ajuns aici')
+      } else if (typeOfFormConst === 1) {
+        submitFormAddMovie(accessToken, formData.value)
+      }
+      clickedOnForm()
     }
 
     return {

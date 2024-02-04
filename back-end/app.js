@@ -5,7 +5,7 @@ const app = express();
 const logger = require('morgan');
 const cors = require('cors');
 const port = 3000;
-const {getMovies, addMovie, getCategories, addCategory, editMovie} = require('./config')
+const {getMovies, addMovie, getCategories, addCategory, editMovie, editCategory} = require('./config')
 
 const jwt = require('jsonwebtoken')
 
@@ -89,6 +89,20 @@ app.post('/category', authenticateToken, async (req, res) => {
         res.status(201).send("Category added")
     } catch(e) {
         res.status(500).send("Couldn't add category")
+    }
+})
+
+app.put('/category/:id', authenticateToken, async (req, res) => {
+    const cta = {
+        id: req.params.id,
+        nameOfCategory: req.body.nameOfCategory,
+        stapleMovies: req.body.stapleMovies
+    }
+    try {
+        await editCategory(cta.id, cta.nameOfCategory, cta.stapleMovies)
+        res.status(201).send("Movie updated")
+    } catch {
+        res.status(500).send("Movie couldnt be updated", e)
     }
 })
  

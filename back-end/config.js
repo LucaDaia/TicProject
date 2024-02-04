@@ -110,4 +110,17 @@ const firebaseConfig = {
     }
   }
 
-  module.exports = { getUsers, addUser, getMovies, addMovie, getCategories, addCategory, editMovie }
+  const editCategory = async (catId, catName, catStapleMovies) => {
+    try {
+    const catRef = doc(db, 'category', catId)
+    await updateDoc(catRef, {
+        nameOfCategory: catName,
+        stapleMovies: catStapleMovies
+    })
+    console.log("Category updated! @ config file")
+  } catch (e) {
+    console.error("Error updating the category")
+  }
+ }
+
+  module.exports = { getUsers, addUser, getMovies, addMovie, getCategories, addCategory, editMovie, editCategory }
